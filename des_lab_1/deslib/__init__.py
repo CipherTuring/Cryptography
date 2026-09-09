@@ -1,7 +1,3 @@
-"""
-deslib: implementación educativa de DES (FIPS PUB 46-3) desde cero,
-sin librerías criptográficas externas.
-"""
 
 from .api import (
     des_check_parity,
