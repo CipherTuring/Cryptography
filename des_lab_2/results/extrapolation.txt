@@ -1,0 +1,15 @@
+Ejercicio 11 — Extrapolación al espacio completo de DES (2^56)
+==============================================================================
+Throughput medido R      : 6,925 llaves/s
+Espacio efectivo de DES  : 2^56 = 72,057,594,037,927,936 llaves
+
+T_max = 2^56 / R  (peor caso, recorrer todo el espacio)
+  1.04e+13 s = 2.89e+09 h = 1.2e+08 d = 3.3e+05 años
+
+T_avg = 2^55 / R  (caso medio, la llave aparece a mitad del recorrido)
+  5.2e+12 s = 1.45e+09 h = 6.02e+07 d = 1.65e+05 años
+
+------------------------------------------------------------------------------
+Referencia del enunciado: un sistema a 10^6 llaves/s
+  T_max = 7.21e+10 s = 2e+07 h = 8.34e+05 d = 2.28e+03 años
+Esta implementación en Python puro es 144x más lenta que esa referencia.

@@ -1,0 +1,33 @@
+==============================================================================
+Ejercicio 4 — ECB frente a CBC con bloques repetidos
+==============================================================================
+Llave K       : 133457799BBCDFF1
+IV (solo CBC) : 0001020304050607
+Texto plano   : ABCDEFGHABCDEFGHABCDEFGHABCDEFGH  (32 bytes)
+Tras PKCS#7   : 40 bytes = 5 bloques (el bloque 5 es relleno completo 0808080808080808)
+
+Representación a nivel de bloque
+--------------------------------
+ i  P_i (ASCII)  P_i (hex)          C_i ECB            C_i CBC           
+ 1  ABCDEFGH     4142434445464748   0EE11BD2808EF0A1   28B7F6B79D803999  
+ 2  ABCDEFGH     4142434445464748   0EE11BD2808EF0A1   2689D9B64763D678  
+ 3  ABCDEFGH     4142434445464748   0EE11BD2808EF0A1   9B72ED92A7A2EB23  
+ 4  ABCDEFGH     4142434445464748   0EE11BD2808EF0A1   9967E907BF68870F  
+ 5  ........     0808080808080808   FDF2E174492922F8   4BD1CCC871C3EB69  
+
+Bloques de criptograma distintos
+--------------------------------
+ECB: 2 distintos de 5  ->  los 4 bloques de texto plano iguales producen 4 criptogramas IGUALES
+CBC: 5 distintos de 5  ->  todos los bloques son distintos
+
+Discusión
+---------
+ECB es una función sin estado: C_i = E_K(P_i) depende únicamente de P_i.
+Como P_1 = P_2 = P_3 = P_4, necesariamente C_1 = C_2 = C_3 = C_4. El
+criptograma filtra así el patrón de repetición del texto plano — un
+adversario deduce dónde se repiten bloques sin recuperar la llave.
+
+CBC introduce estado: C_i = E_K(P_i XOR C_{i-1}), con C_0 = IV. Aunque
+P_i se repita, la entrada real del cifrado incluye C_{i-1}, que cambia
+en cada posición. Bloques de texto plano idénticos producen entonces
+bloques de criptograma distintos y el patrón queda oculto.

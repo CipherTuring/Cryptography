@@ -1,0 +1,29 @@
+{
+  "key": "133457799BBCDFF1",
+  "iv1": "0000000000000000",
+  "iv2": "0000000000000001",
+  "plaintext": "Mensaje identico cifrado dos veces con la misma llave.",
+  "ciphertext_iv1": "4962A1833E8B9634595958AE98B35EC11D480553E167D296401F1A3E3A8803BB3594FCF2D122D583E1E55260EF957F58578A2C5B97E0154B",
+  "ciphertext_iv2": "6375E43B9A07E2E91FB70012F8E2F86B0000077376ED757CAE98C355A56335AE3161D5CD9C9133C8D75C09CB2B73DFC39668E4F79A9EAB2C",
+  "ciphertexts_differ": true,
+  "diff_bits_per_block": [
+    30,
+    30,
+    26,
+    39,
+    34,
+    34,
+    34
+  ],
+  "diff_bits_total": 227,
+  "total_bits": 448,
+  "wrong_iv_diff_bits_per_block": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}

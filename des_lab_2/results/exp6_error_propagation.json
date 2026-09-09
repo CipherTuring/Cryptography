@@ -1,0 +1,39 @@
+{
+  "key": "133457799BBCDFF1",
+  "iv": "A1B2C3D4E5F60718",
+  "plaintext": "BLOQUE01BLOQUE02BLOQUE03BLOQUE04BLOQUE05",
+  "corrupted_block_index": 2,
+  "corrupted_byte_offset": 8,
+  "corrupted_bit_from_msb": 0,
+  "ecb": {
+    "mode": "ECB",
+    "diff_bits_per_block": [
+      0,
+      37,
+      0,
+      0,
+      0,
+      0
+    ],
+    "changed_blocks": [
+      2
+    ],
+    "total_diff_bits": 37
+  },
+  "cbc": {
+    "mode": "CBC",
+    "diff_bits_per_block": [
+      0,
+      31,
+      1,
+      0,
+      0,
+      0
+    ],
+    "changed_blocks": [
+      2,
+      3
+    ],
+    "total_diff_bits": 32
+  }
+}

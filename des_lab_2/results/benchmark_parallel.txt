@@ -1,0 +1,14 @@
+Ejercicios 9 y 10 — Búsqueda exhaustiva paralela
+==============================================================================
+Espacio: n = 20 bits desconocidos = 1,048,576 candidatos
+Repeticiones por configuración: 3
+Llave en el último candidato: se recorre el espacio completo para todo p.
+
+Workers   Time [s]   Keys Tested       Keys/s   Speedup  Efficiency
+------------------------------------------------------------------------------
+      1    424.397     1,048,576        2,471      1.00        1.00
+      2    257.916     1,048,576        4,066      1.65        0.82
+      4    176.522     1,048,576        5,940      2.40        0.60
+      8    151.425     1,048,576        6,925      2.80        0.35
+
+Mejor throughput medido: 6,925 llaves/s con p = 8

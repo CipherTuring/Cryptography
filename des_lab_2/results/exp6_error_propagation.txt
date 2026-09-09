@@ -1,0 +1,57 @@
+==============================================================================
+Ejercicio 6 — Propagación de error en ECB y CBC
+==============================================================================
+Llave K       : 133457799BBCDFF1
+IV (solo CBC) : A1B2C3D4E5F60718
+Texto plano   : BLOQUE01BLOQUE02BLOQUE03BLOQUE04BLOQUE05  (40 bytes)
+Criptograma   : 6 bloques tras PKCS#7
+Bit alterado  : bloque 2, byte 0 (offset 8), bit 0 contando desde el MSB — exactamente 1 bit de todo el criptograma
+
+ECB: descifrado del criptograma alterado
+----------------------------------------
+ i  P_i original P_i alterado bits distintos
+ 1  BLOQUE01     BLOQUE01                  0
+ 2  BLOQUE02     h>......                 37  <--
+ 3  BLOQUE03     BLOQUE03                  0
+ 4  BLOQUE04     BLOQUE04                  0
+ 5  BLOQUE05     BLOQUE05                  0
+ 6  ........     ........                  0
+
+bloques afectados : [2]
+bits alterados    : 37 de 384 en todo el mensaje
+
+CBC: descifrado del criptograma alterado
+----------------------------------------
+ i  P_i original P_i alterado bits distintos
+ 1  BLOQUE01     BLOQUE01                  0
+ 2  BLOQUE02     !.*...y8                 31  <--
+ 3  BLOQUE03     .LOQUE03                  1  <--
+ 4  BLOQUE04     BLOQUE04                  0
+ 5  BLOQUE05     BLOQUE05                  0
+ 6  ........     ........                  0
+
+bloques afectados : [2, 3]
+bits alterados    : 32 de 384 en todo el mensaje
+
+Comparación con el comportamiento teórico
+-----------------------------------------
+ECB — teoría: P_i = D_K(C_i) no depende de ningún otro bloque, así que
+  un bit alterado en C_i corrompe ÚNICAMENTE P_i, y por el efecto
+  avalancha de DES lo corrompe por completo (~32 de 64 bits, la mitad
+  en promedio). El error NO se propaga.
+  Medido: bloques [2], 37 bits alterados.
+
+CBC — teoría: P_i = D_K(C_i) XOR C_(i-1), de modo que C_i interviene en
+  dos bloques de texto plano y en ninguno más:
+    · P_i     queda completamente corrompido (avalancha de D_K).
+    · P_(i+1) cambia EXACTAMENTE en el mismo bit que se alteró en C_i,
+      porque ahí C_i entra por XOR directo, sin pasar por DES.
+    · P_(i+2) en adelante quedan intactos: el error NO se propaga más
+      allá de dos bloques (CBC es auto-sincronizante).
+  Medido: bloques [2, 3], 32 bits alterados (31 en P_2 y 1 en P_3).
+
+Ninguno de los dos modos detecta la alteración: ambos entregan texto
+plano corrupto sin señalar error. La integridad requiere un MAC o un
+modo autenticado; el relleno PKCS#7 no sirve para eso, y usar su
+validación como señal de error es justamente lo que abre los ataques
+de oráculo de relleno.

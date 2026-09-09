@@ -1,0 +1,41 @@
+{
+  "experiment": "extrapolation",
+  "system": {
+    "cpu_model": "Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz",
+    "logical_cores": 8,
+    "physical_cores": 4,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.12.10",
+    "python_implementation": "CPython"
+  },
+  "throughput_keys_per_s": 6924.714706032586,
+  "effective_key_bits": 56,
+  "total_keys": 72057594037927936,
+  "t_max": {
+    "seconds": 10405857439174.166,
+    "hours": 2890515955.326157,
+    "days": 120438164.80525655,
+    "years": 329741.7243128174
+  },
+  "t_avg": {
+    "seconds": 5202928719587.083,
+    "hours": 1445257977.6630785,
+    "days": 60219082.40262827,
+    "years": 164870.8621564087
+  },
+  "reference_1e6_keys_per_s": {
+    "throughput_keys_per_s": 1000000.0,
+    "t_max": {
+      "seconds": 72057594037.92793,
+      "hours": 20015998.34386887,
+      "days": 833999.9309945363,
+      "years": 2283.3673675415093
+    },
+    "t_avg": {
+      "seconds": 36028797018.96397,
+      "hours": 10007999.171934435,
+      "days": 416999.96549726813,
+      "years": 1141.6836837707547
+    }
+  }
+}

@@ -1,0 +1,63 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Empaquetado / distribución
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Caches de herramientas
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Herramientas / editores
+# ---------------------------------------------------------------------------
+# Configuración local de Claude Code (no se versiona)
+.claude/
+
+.vscode/
+.idea/
+*.swp
+
+# ---------------------------------------------------------------------------
+# Sistema operativo
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------------
+# Secretos / configuración local
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Resultados de laboratorio
+# ---------------------------------------------------------------------------
+# Los resultados propiamente dichos (results/*.json, *.txt, *.png) SÍ se
+# versionan: son entregables del laboratorio.
+# Sólo se excluye el registro crudo de la última corrida del banco de pruebas.
+# El patrón lleva '**/' para que aplique en cualquier des_lab_N/, no sólo en
+# la raíz del repositorio.
+**/results/benchmark_run.log
+*.log

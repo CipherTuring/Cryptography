@@ -1,0 +1,10 @@
+Ejercicio 8 — Búsqueda exhaustiva secuencial (1 trabajador)
+==============================================================================
+Repeticiones por configuración: 3
+La llave se coloca en una posición pseudoaleatoria reproducible.
+
+  n        2^n  candidatos (med)  tiempo medio [s]     llaves/s  pos. llave
+------------------------------------------------------------------------------
+ 16     65,536            18,528             7.085        2,615      28.3%
+ 18    262,144            54,122            20.950        2,583      20.6%
+ 20  1,048,576           433,146           163.766        2,645      41.3%

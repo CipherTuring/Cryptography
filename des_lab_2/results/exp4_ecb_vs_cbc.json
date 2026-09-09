@@ -1,0 +1,30 @@
+{
+  "key": "133457799BBCDFF1",
+  "iv": "0001020304050607",
+  "plaintext_ascii": "ABCDEFGHABCDEFGHABCDEFGHABCDEFGH",
+  "plaintext_blocks": [
+    "4142434445464748",
+    "4142434445464748",
+    "4142434445464748",
+    "4142434445464748",
+    "0808080808080808"
+  ],
+  "ecb_blocks": [
+    "0EE11BD2808EF0A1",
+    "0EE11BD2808EF0A1",
+    "0EE11BD2808EF0A1",
+    "0EE11BD2808EF0A1",
+    "FDF2E174492922F8"
+  ],
+  "cbc_blocks": [
+    "28B7F6B79D803999",
+    "2689D9B64763D678",
+    "9B72ED92A7A2EB23",
+    "9967E907BF68870F",
+    "4BD1CCC871C3EB69"
+  ],
+  "ecb_unique_blocks": 2,
+  "cbc_unique_blocks": 5,
+  "ecb_leaks_repetition": true,
+  "cbc_leaks_repetition": false
+}

@@ -1,0 +1,55 @@
+==============================================================================
+Ejercicio 5 — Efecto del vector de inicialización en CBC
+==============================================================================
+Llave K     : 133457799BBCDFF1
+IV_1        : 0000000000000000
+IV_2        : 0000000000000001   (difiere de IV_1 en 1 bit)
+Texto plano : Mensaje identico cifrado dos veces con la misma llave.
+              54 bytes -> 56 bytes tras PKCS#7 = 7 bloques
+
+C_1 = E_CBC(K, P, IV_1)  frente a  C_2 = E_CBC(K, P, IV_2)
+----------------------------------------------------------
+ i  C_i con IV_1       C_i con IV_2       bits distintos
+ 1  4962A1833E8B9634   6375E43B9A07E2E9               30
+ 2  595958AE98B35EC1   1FB70012F8E2F86B               30
+ 3  1D480553E167D296   0000077376ED757C               26
+ 4  401F1A3E3A8803BB   AE98C355A56335AE               39
+ 5  3594FCF2D122D583   3161D5CD9C9133C8               34
+ 6  E1E55260EF957F58   D75C09CB2B73DFC3               34
+ 7  578A2C5B97E0154B   9668E4F79A9EAB2C               34
+
+C_1 != C_2                 : True
+bits distintos en total    : 227 de 448  (50.7%)
+
+Descifrar C_1 con el IV equivocado (IV_2)
+-----------------------------------------
+ i  P_i correcto                 P_i con IV erróneo            bits
+ 1  Mensaje                      Mensaje!                         1
+ 2  identico                     identico                         0
+ 3   cifrado                      cifrado                         0
+ 4   dos vec                      dos vec                         0
+ 5  es con l                     es con l                         0
+ 6  a misma                      a misma                          0
+ 7  llave...                     llave...                         0
+
+Solo P_1 se ve afectado, y exactamente en los mismos bits en que
+difieren los dos IVs: en CBC, P_1 = D_K(C_1) XOR IV, así que un IV
+erróneo se propaga al texto plano por XOR, bit a bit, y no afecta a
+ningún bloque posterior.
+
+Discusión
+---------
+El IV hace que el cifrado sea PROBABILÍSTICO. Sin él, CBC sería una
+función determinista de (K, P): cifrar dos veces el mismo mensaje con
+la misma llave daría el mismo criptograma, y un adversario que observa
+el canal podría detectar mensajes repetidos, construir un diccionario
+de criptogramas conocidos o detectar que dos sesiones transmiten el
+mismo contenido — todo sin recuperar la llave.
+
+Con un IV distinto por mensaje, el mismo par (K, P) produce
+criptogramas distintos y esa fuga desaparece. Nótese que el IV NO es
+secreto (el receptor lo necesita para descifrar y suele viajar en
+claro junto al criptograma), pero sí debe ser IMPREDECIBLE para el
+adversario: si puede predecir el IV del próximo mensaje, puede montar
+un ataque de texto plano elegido y verificar conjeturas sobre P_1.
+Por eso `modes.cbc.random_iv()` usa `os.urandom`.
