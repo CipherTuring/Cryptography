@@ -11,6 +11,21 @@ This module is the public facade: it re-exports the names that callers
 are expected to use and grows as each layer is added.
 """
 
-__all__: list[str] = []
+from .gf import IRREDUCIBLE, add, inverse, mul, xtime
+from .sbox import INV_SBOX, SBOX, inv_sub_byte, sub_byte
+
+__all__ = [
+    # gf
+    "IRREDUCIBLE",
+    "add",
+    "xtime",
+    "mul",
+    "inverse",
+    # sbox
+    "SBOX",
+    "INV_SBOX",
+    "sub_byte",
+    "inv_sub_byte",
+]
 
 __version__ = "1.0.0"
