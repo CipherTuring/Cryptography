@@ -169,3 +169,94 @@ def test_the_text_tables_are_aligned():
     assert rows, "no measurement rows in the report"
     for row in rows:
         assert len(row) == len(header), f"{row!r} does not match the header width"
+
+
+# ---------------------------------------------------------------------------
+# Detecting a contaminated measurement
+# ---------------------------------------------------------------------------
+
+
+def test_a_clean_measurement_is_reliable():
+    """CPU time close to wall-clock time means the process really ran."""
+    measurement = make_measurement(
+        encrypt_times=[2.0], decrypt_times=[4.0],
+        encrypt_cpu_times=[1.99], decrypt_cpu_times=[3.98],
+    )
+    assert measurement.idle_fraction < 0.01
+    assert measurement.reliable
+
+
+def test_a_suspended_machine_is_detected():
+    """
+    The failure seen in practice: a repetition whose wall-clock time is
+    dominated by time the process was not running. Reporting it as a
+    throughput would describe the machine, not the cipher.
+    """
+    measurement = make_measurement(
+        encrypt_times=[165.0, 3597.0], decrypt_times=[11076.0, 3624.0],
+        encrypt_cpu_times=[164.0, 170.0], decrypt_cpu_times=[168.0, 172.0],
+    )
+    assert measurement.idle_fraction > 0.9
+    assert not measurement.reliable
+
+
+def test_the_verdict_travels_with_the_measurement():
+    payload = make_measurement(
+        encrypt_times=[2.0], decrypt_times=[2.0],
+        encrypt_cpu_times=[2.0], decrypt_cpu_times=[2.0],
+    ).as_dict()
+    assert payload["reliable"] is True
+    assert payload["idle_fraction"] == pytest.approx(0.0)
+    assert payload["encrypt"]["cpu_times_s"] == [2.0]
+
+
+def test_a_short_run_does_not_trip_the_check():
+    """
+    The check abstains below a second: the resolution of the CPU clock,
+    around 15 ms on Windows, would otherwise look like lost time on a
+    buffer this small and make the suite flaky.
+    """
+    measurements = run_benchmark((0.05,), repeats=1, backend="fast", echo=False)
+    assert all(item.reliable for item in measurements)
+    assert all(item.idle_fraction == 0.0 for item in measurements)
+
+
+def test_intervals_too_short_to_judge_are_ignored():
+    """A huge apparent gap over 0.1 s is quantisation, not suspension."""
+    measurement = make_measurement(
+        encrypt_times=[0.1], decrypt_times=[0.1],
+        encrypt_cpu_times=[0.0], decrypt_cpu_times=[0.0],
+    )
+    assert measurement.idle_fraction == 0.0
+    assert measurement.reliable
+
+
+def test_ordinary_scheduler_noise_is_tolerated():
+    """
+    The case that made a first attempt throw away fifty minutes of work:
+    a 1.3 s interval losing 5% of its time is a handful of clock ticks
+    on a desktop operating system, not a contaminated measurement.
+    """
+    measurement = make_measurement(
+        encrypt_times=[1.289], decrypt_times=[1.314],
+        encrypt_cpu_times=[1.221], decrypt_cpu_times=[1.250],
+    )
+    assert measurement.reliable
+
+
+def test_the_absolute_slack_does_not_rescue_a_long_interval():
+    """A fixed allowance must not excuse a percentage-sized loss."""
+    measurement = make_measurement(
+        encrypt_times=[120.0], decrypt_times=[120.0],
+        encrypt_cpu_times=[60.0], decrypt_cpu_times=[60.0],
+    )
+    assert not measurement.reliable
+
+
+def test_the_relative_tolerance_does_not_condemn_a_short_interval():
+    """Half a second lost out of 1.2 s is still within the fixed slack."""
+    measurement = make_measurement(
+        encrypt_times=[1.2], decrypt_times=[1.2],
+        encrypt_cpu_times=[1.0], decrypt_cpu_times=[1.0],
+    )
+    assert measurement.reliable

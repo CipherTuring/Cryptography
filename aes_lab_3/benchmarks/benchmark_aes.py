@@ -62,6 +62,25 @@ QUICK_REPEATS = 2
 
 KEY_SIZES_IN_BYTES = (16, 24, 32)
 
+# A measurement is rejected when a timed interval spent more than this
+# share of its wall-clock time off the processor. The failure this
+# guards against is a machine that suspends or is busy with something
+# else, which showed up in practice as 99% of an interval lost; ordinary
+# scheduling noise stays well under 10%, so the threshold sits between
+# the two rather than as close to zero as possible.
+IDLE_TOLERANCE = 0.20
+
+# On top of the relative tolerance, a fixed allowance. The CPU clock is
+# quantised to about 15 ms on Windows, and a few scheduler quanta are
+# unavoidable, so on a short interval a purely relative rule is far too
+# strict: 5% of 1.3 s is only four clock ticks.
+IDLE_ABSOLUTE_SLACK_S = 0.25
+
+# Below this duration the check abstains entirely rather than reporting
+# noise. Every size the assignment asks for runs far longer than a
+# second.
+IDLE_MIN_INTERVAL_S = 1.0
+
 
 @dataclass
 class Measurement:
@@ -73,7 +92,55 @@ class Measurement:
     size_mb: float
     encrypt_times: list[float] = field(default_factory=list)
     decrypt_times: list[float] = field(default_factory=list)
+    encrypt_cpu_times: list[float] = field(default_factory=list)
+    decrypt_cpu_times: list[float] = field(default_factory=list)
     round_trip_verified: bool = False
+
+    @property
+    def idle_fraction(self) -> float:
+        """
+        Largest share of a timed interval during which this process was
+        not actually running on a processor.
+
+        Wall-clock time is what the throughput of Exercise 3 is defined
+        on, but it also counts time the machine spent suspended or
+        running something else. Comparing it against CPU time turns that
+        contamination into a number: a clean measurement sits near zero,
+        while a long gap means the reading is about the machine, not
+        about AES.
+
+        Intervals shorter than `IDLE_MIN_INTERVAL_S` are ignored, because
+        the resolution of the CPU clock would dominate the comparison.
+        With no interval long enough to judge, the result is zero: the
+        check abstains instead of inventing a verdict.
+        """
+        return max(
+            ((wall - cpu) / wall for wall, cpu in self._judgeable_intervals()),
+            default=0.0,
+        )
+
+    def _judgeable_intervals(self):
+        """The timed intervals long enough for the CPU clock to resolve."""
+        for wall, cpu in zip(
+            self.encrypt_times + self.decrypt_times,
+            self.encrypt_cpu_times + self.decrypt_cpu_times,
+        ):
+            if wall >= IDLE_MIN_INTERVAL_S:
+                yield wall, cpu
+
+    @property
+    def reliable(self) -> bool:
+        """
+        True when no repetition lost a meaningful amount of time.
+
+        The allowance is whichever is larger, the relative tolerance or
+        the fixed slack, so that a short interval is not condemned by a
+        few clock ticks while a long one is still held to a percentage.
+        """
+        return all(
+            (wall - cpu) <= max(IDLE_TOLERANCE * wall, IDLE_ABSOLUTE_SLACK_S)
+            for wall, cpu in self._judgeable_intervals()
+        )
 
     @staticmethod
     def _stdev(values: list[float]) -> float:
@@ -111,14 +178,18 @@ class Measurement:
             "rounds": self.rounds,
             "size_mb": self.size_mb,
             "round_trip_verified": self.round_trip_verified,
+            "idle_fraction": self.idle_fraction,
+            "reliable": self.reliable,
             "encrypt": {
                 "times_s": self.encrypt_times,
+                "cpu_times_s": self.encrypt_cpu_times,
                 "mean_s": self.encrypt_mean,
                 "stdev_s": self.encrypt_stdev,
                 "throughput_mb_s": self.encrypt_throughput,
             },
             "decrypt": {
                 "times_s": self.decrypt_times,
+                "cpu_times_s": self.decrypt_cpu_times,
                 "mean_s": self.decrypt_mean,
                 "stdev_s": self.decrypt_stdev,
                 "throughput_mb_s": self.decrypt_throughput,
@@ -150,13 +221,15 @@ def measure(
         # the cipher, so one is forced beforehand.
         gc.collect()
 
-        start = time.perf_counter()
+        start, cpu_start = time.perf_counter(), time.process_time()
         ciphertext = aes.encrypt(data)
         result.encrypt_times.append(time.perf_counter() - start)
+        result.encrypt_cpu_times.append(time.process_time() - cpu_start)
 
-        start = time.perf_counter()
+        start, cpu_start = time.perf_counter(), time.process_time()
         recovered = aes.decrypt(ciphertext)
         result.decrypt_times.append(time.perf_counter() - start)
+        result.decrypt_cpu_times.append(time.process_time() - cpu_start)
 
         verified = verified and recovered == data
         del ciphertext, recovered
@@ -188,7 +261,8 @@ def run_benchmark(
                     f"({result.encrypt_throughput:5.2f} MB/s)  "
                     f"decrypt {result.decrypt_mean:8.3f} s "
                     f"({result.decrypt_throughput:5.2f} MB/s)"
-                    f"{'' if result.round_trip_verified else '  ROUND TRIP FAILED'}",
+                    f"{'' if result.round_trip_verified else '  ROUND TRIP FAILED'}"
+                    f"{'' if result.reliable else f'  UNRELIABLE: {result.idle_fraction:.0%} off-CPU'}",
                     flush=True,
                 )
         del data
@@ -199,17 +273,17 @@ def _table_for_size(report: Report, size_mb: float, rows: list[Measurement]) -> 
     """One block of the text report: all three variants at one data size."""
     report.section(f"Data size: {size_mb:g} MB")
     report.line(
-        f"{'Variant':<10}{'Rounds':>7}{'Encrypt (s)':>15}{'Enc (MB/s)':>12}"
-        f"{'Decrypt (s)':>15}{'Dec (MB/s)':>12}"
+        f"{'Variant':<10}{'Rounds':>7}{'Encrypt (s)':>16}{'Enc (MB/s)':>12}"
+        f"{'Decrypt (s)':>16}{'Dec (MB/s)':>12}"
     )
-    report.rule("-", 71)
+    report.rule("-", 73)
     for row in rows:
-        # Each time field is 8 + 3 + 4 = 15 characters, matching its header.
+        # Each time field is 9 + 3 + 4 = 16 characters, matching its header.
         report.line(
             f"{row.variant:<10}{row.rounds:>7}"
-            f"{row.encrypt_mean:>8.3f} +-{row.encrypt_stdev:>4.2f}"
+            f"{row.encrypt_mean:>9.3f} +-{row.encrypt_stdev:>4.2f}"
             f"{row.encrypt_throughput:>12.3f}"
-            f"{row.decrypt_mean:>8.3f} +-{row.decrypt_stdev:>4.2f}"
+            f"{row.decrypt_mean:>9.3f} +-{row.decrypt_stdev:>4.2f}"
             f"{row.decrypt_throughput:>12.3f}"
         )
 
@@ -266,6 +340,12 @@ def build_report(
     report.line(
         f"Round trip        : {'verified on every repetition' if verified else 'FAILED'}"
     )
+    worst_idle = max((item.idle_fraction for item in measurements), default=0.0)
+    reliable = all(item.reliable for item in measurements)
+    report.line(
+        f"Off-CPU time      : at most {worst_idle:.1%} of any timed interval"
+        f"{'' if reliable else '  -- ABOVE TOLERANCE, RESULTS NOT USABLE'}"
+    )
 
     by_size: dict[float, list[Measurement]] = {}
     for item in measurements:
@@ -284,6 +364,8 @@ def build_report(
             "block_size_bytes": BLOCK_SIZE,
         },
         "round_trip_verified": verified,
+        "reliable": reliable,
+        "worst_idle_fraction": worst_idle,
         "measurements": [item.as_dict() for item in measurements],
     }
     return report

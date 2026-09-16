@@ -1,0 +1,54 @@
+==============================================================================
+Exercise 3 - AES core performance
+==============================================================================
+
+Experimental setup
+------------------
+CPU               : Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz
+Logical cores     : 8
+Platform          : Windows-11-10.0.26200-SP0
+Python            : CPython 3.12.10
+Backend           : fast
+Repetitions       : 3 (times below are the average)
+Mode              : raw ECB over the core, not a secure mode
+Key schedule      : computed once per variant, outside the timed region
+Round trip        : verified on every repetition
+Off-CPU time      : at most 2.0% of any timed interval
+
+Data size: 1 MB
+---------------
+Variant    Rounds     Encrypt (s)  Enc (MB/s)     Decrypt (s)  Dec (MB/s)
+-------------------------------------------------------------------------
+AES-128        10    1.319 +-0.03       0.758    1.299 +-0.00       0.770
+AES-192        12    1.499 +-0.06       0.667    1.501 +-0.03       0.666
+AES-256        14    1.714 +-0.02       0.584    1.690 +-0.03       0.592
+
+Data size: 10 MB
+----------------
+Variant    Rounds     Encrypt (s)  Enc (MB/s)     Decrypt (s)  Dec (MB/s)
+-------------------------------------------------------------------------
+AES-128        10   12.034 +-0.13       0.831   11.986 +-0.09       0.834
+AES-192        12   14.401 +-0.18       0.694   14.243 +-0.05       0.702
+AES-256        14   16.736 +-0.23       0.598   16.569 +-0.12       0.604
+
+Data size: 100 MB
+-----------------
+Variant    Rounds     Encrypt (s)  Enc (MB/s)     Decrypt (s)  Dec (MB/s)
+-------------------------------------------------------------------------
+AES-128        10  121.071 +-0.32       0.826  120.603 +-0.55       0.829
+AES-192        12  144.443 +-0.50       0.692  144.090 +-0.78       0.694
+AES-256        14  167.508 +-0.69       0.597  166.674 +-0.48       0.600
+
+Throughput relative to AES-128, and the ratio 10 : Nr
+-----------------------------------------------------
+Size (MB)   Variant    Rounds   Measured   10 / Nr  Difference
+--------------------------------------------------------------
+1.00        AES-128        10      1.000     1.000      +0.000
+1.00        AES-192        12      0.879     0.833      +0.046
+1.00        AES-256        14      0.769     0.714      +0.055
+10.00       AES-128        10      1.000     1.000      +0.000
+10.00       AES-192        12      0.836     0.833      +0.002
+10.00       AES-256        14      0.719     0.714      +0.005
+100.00      AES-128        10      1.000     1.000      +0.000
+100.00      AES-192        12      0.838     0.833      +0.005
+100.00      AES-256        14      0.723     0.714      +0.008
