@@ -9,11 +9,23 @@ the test would only prove that the code agrees with itself.
 
 Sources:
 
-- FIPS PUB 197, "Advanced Encryption Standard", Figure 7 (S-box) and
-  Figure 14 (inverse S-box).
+- FIPS PUB 197, "Advanced Encryption Standard": Figure 7 (S-box),
+  Figure 14 (inverse S-box) and Appendix B (cipher example).
+- The Rijndael proposal, for the single-column MixColumns vectors.
 """
 
-__all__ = ["FIPS197_SBOX", "FIPS197_INV_SBOX"]
+__all__ = [
+    "FIPS197_SBOX",
+    "FIPS197_INV_SBOX",
+    "APPENDIX_B_PLAINTEXT",
+    "APPENDIX_B_KEY",
+    "APPENDIX_B_ROUND1_START",
+    "APPENDIX_B_ROUND1_AFTER_SUB_BYTES",
+    "APPENDIX_B_ROUND1_AFTER_SHIFT_ROWS",
+    "APPENDIX_B_ROUND1_AFTER_MIX_COLUMNS",
+    "APPENDIX_B_ROUND1_KEY",
+    "MIX_COLUMNS_VECTORS",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -94,4 +106,38 @@ FIPS197_INV_SBOX = (
     0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
     0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26,
     0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
+)
+
+
+# ---------------------------------------------------------------------------
+# FIPS-197, Appendix B ("Cipher Example"): the round-by-round trace of a
+# single AES-128 encryption. Only round 1 is transcribed here, which is
+# enough to pin down SubBytes, ShiftRows and MixColumns individually: the
+# output of each step is the input of the next, so the three values have
+# to line up with one another as well as with the implementation.
+# ---------------------------------------------------------------------------
+
+APPENDIX_B_PLAINTEXT = bytes.fromhex("3243f6a8885a308d313198a2e0370734")
+APPENDIX_B_KEY = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+
+# Round 1, as printed in the "Round Number 1" block of the appendix.
+APPENDIX_B_ROUND1_START = bytes.fromhex("193de3bea0f4e22b9ac68d2ae9f84808")
+APPENDIX_B_ROUND1_AFTER_SUB_BYTES = bytes.fromhex("d42711aee0bf98f1b8b45de51e415230")
+APPENDIX_B_ROUND1_AFTER_SHIFT_ROWS = bytes.fromhex("d4bf5d30e0b452aeb84111f11e2798e5")
+APPENDIX_B_ROUND1_AFTER_MIX_COLUMNS = bytes.fromhex("046681e5e0cb199a48f8d37a2806264c")
+APPENDIX_B_ROUND1_KEY = bytes.fromhex("a0fafe17 88542cb1 23a33939 2a6c7605".replace(" ", ""))
+
+
+# ---------------------------------------------------------------------------
+# Single-column MixColumns vectors, the ones commonly quoted alongside
+# the Rijndael proposal. Each pair is (input column, expected output).
+# ---------------------------------------------------------------------------
+
+MIX_COLUMNS_VECTORS = (
+    ((0xDB, 0x13, 0x53, 0x45), (0x8E, 0x4D, 0xA1, 0xBC)),
+    ((0xF2, 0x0A, 0x22, 0x5C), (0x9F, 0xDC, 0x58, 0x9D)),
+    ((0x01, 0x01, 0x01, 0x01), (0x01, 0x01, 0x01, 0x01)),
+    ((0xC6, 0xC6, 0xC6, 0xC6), (0xC6, 0xC6, 0xC6, 0xC6)),
+    ((0xD4, 0xD4, 0xD4, 0xD5), (0xD5, 0xD5, 0xD7, 0xD6)),
+    ((0x2D, 0x26, 0x31, 0x4C), (0x4D, 0x7E, 0xBD, 0xF8)),
 )
