@@ -30,10 +30,8 @@ from .state import BLOCK_SIZE
 
 __all__ = ["AES", "BACKENDS"]
 
-# Registered backends. "fast" joins the tuple once `aeslib.fast` is
-# part of the package; until then asking for it is a clean error
-# rather than an import failure.
-BACKENDS = ("reference",)
+# Registered backends, slowest and clearest first.
+BACKENDS = ("reference", "fast")
 
 DEFAULT_BACKEND = "reference"
 
