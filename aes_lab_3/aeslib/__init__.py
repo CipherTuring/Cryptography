@@ -12,6 +12,14 @@ are expected to use and grows as each layer is added.
 """
 
 from .gf import IRREDUCIBLE, add, inverse, mul, xtime
+from .key_schedule import (
+    KEY_SIZES,
+    expand_key,
+    number_of_rounds,
+    rot_word,
+    round_keys,
+    sub_word,
+)
 from .sbox import INV_SBOX, SBOX, inv_sub_byte, sub_byte
 from .state import BLOCK_SIZE, NB, bytes_to_state, format_state, state_to_bytes
 from .transforms import (
@@ -50,6 +58,13 @@ __all__ = [
     "mix_columns",
     "inv_mix_columns",
     "add_round_key",
+    # key_schedule
+    "KEY_SIZES",
+    "rot_word",
+    "sub_word",
+    "number_of_rounds",
+    "expand_key",
+    "round_keys",
 ]
 
 __version__ = "1.0.0"

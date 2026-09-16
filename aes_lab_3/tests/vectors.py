@@ -10,7 +10,8 @@ the test would only prove that the code agrees with itself.
 Sources:
 
 - FIPS PUB 197, "Advanced Encryption Standard": Figure 7 (S-box),
-  Figure 14 (inverse S-box) and Appendix B (cipher example).
+  Figure 14 (inverse S-box), Figure 11 (round constants),
+  Appendix A (key expansion) and Appendix B (cipher example).
 - The Rijndael proposal, for the single-column MixColumns vectors.
 """
 
@@ -25,6 +26,13 @@ __all__ = [
     "APPENDIX_B_ROUND1_AFTER_MIX_COLUMNS",
     "APPENDIX_B_ROUND1_KEY",
     "MIX_COLUMNS_VECTORS",
+    "APPENDIX_A_KEY_128",
+    "APPENDIX_A_KEY_192",
+    "APPENDIX_A_KEY_256",
+    "APPENDIX_A_ROUND_KEYS_128",
+    "APPENDIX_A_LAST_ROUND_KEY_192",
+    "APPENDIX_A_LAST_ROUND_KEY_256",
+    "FIPS197_ROUND_CONSTANTS",
 ]
 
 
@@ -140,4 +148,52 @@ MIX_COLUMNS_VECTORS = (
     ((0xC6, 0xC6, 0xC6, 0xC6), (0xC6, 0xC6, 0xC6, 0xC6)),
     ((0xD4, 0xD4, 0xD4, 0xD5), (0xD5, 0xD5, 0xD7, 0xD6)),
     ((0x2D, 0x26, 0x31, 0x4C), (0x4D, 0x7E, 0xBD, 0xF8)),
+)
+
+
+# ---------------------------------------------------------------------------
+# FIPS-197, Appendix A: key expansion examples. The three keys below are
+# the ones the appendix expands, one per key size.
+#
+# For AES-128 the eleven round keys are transcribed in full (A.1). For
+# AES-192 and AES-256 only the first and last round keys are listed: the
+# first is the key itself and the last is the hardest value to get right,
+# since an error anywhere in the schedule propagates to it. The middle of
+# those two expansions is covered transitively by the Appendix C cipher
+# vectors, which cannot match unless every round key is correct.
+# ---------------------------------------------------------------------------
+
+APPENDIX_A_KEY_128 = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
+APPENDIX_A_KEY_192 = bytes.fromhex(
+    "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
+)
+APPENDIX_A_KEY_256 = bytes.fromhex(
+    "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+)
+
+# A.1 -- the complete expansion for the 128-bit key, as round keys.
+APPENDIX_A_ROUND_KEYS_128 = tuple(
+    bytes.fromhex(value)
+    for value in (
+        "2b7e151628aed2a6abf7158809cf4f3c",
+        "a0fafe1788542cb123a339392a6c7605",
+        "f2c295f27a96b9435935807a7359f67f",
+        "3d80477d4716fe3e1e237e446d7a883b",
+        "ef44a541a8525b7fb671253bdb0bad00",
+        "d4d1c6f87c839d87caf2b8bc11f915bc",
+        "6d88a37a110b3efddbf98641ca0093fd",
+        "4e54f70e5f5fc9f384a64fb24ea6dc4f",
+        "ead27321b58dbad2312bf5607f8d292f",
+        "ac7766f319fadc2128d12941575c006e",
+        "d014f9a8c9ee2589e13f0cc8b6630ca6",
+    )
+)
+
+# A.2 and A.3 -- the final round key of each expansion.
+APPENDIX_A_LAST_ROUND_KEY_192 = bytes.fromhex("e98ba06f448c773c8ecc720401002202")
+APPENDIX_A_LAST_ROUND_KEY_256 = bytes.fromhex("fe4890d1e6188d0b046df344706c631e")
+
+# FIPS-197, Figure 11: the ten round constants used by the schedule.
+FIPS197_ROUND_CONSTANTS = (
+    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36,
 )
