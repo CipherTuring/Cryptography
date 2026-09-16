@@ -11,7 +11,9 @@ Sources:
 
 - FIPS PUB 197, "Advanced Encryption Standard": Figure 7 (S-box),
   Figure 14 (inverse S-box), Figure 11 (round constants),
-  Appendix A (key expansion) and Appendix B (cipher example).
+  Appendix A (key expansion), Appendix B (cipher example) and
+  Appendix C (one example per key size).
+- NIST SP 800-38A, Appendix F.1, for the multi-block ECB examples.
 - The Rijndael proposal, for the single-column MixColumns vectors.
 """
 
@@ -33,6 +35,11 @@ __all__ = [
     "APPENDIX_A_LAST_ROUND_KEY_192",
     "APPENDIX_A_LAST_ROUND_KEY_256",
     "FIPS197_ROUND_CONSTANTS",
+    "APPENDIX_C_PLAINTEXT",
+    "APPENDIX_C_VECTORS",
+    "APPENDIX_B_CIPHERTEXT",
+    "SP800_38A_PLAINTEXT",
+    "SP800_38A_ECB_VECTORS",
 ]
 
 
@@ -196,4 +203,85 @@ APPENDIX_A_LAST_ROUND_KEY_256 = bytes.fromhex("fe4890d1e6188d0b046df344706c631e"
 # FIPS-197, Figure 11: the ten round constants used by the schedule.
 FIPS197_ROUND_CONSTANTS = (
     0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36,
+)
+
+
+# ---------------------------------------------------------------------------
+# FIPS-197, Appendix C: one worked example per key size. All three share
+# the same plaintext and use a key that is simply the ascending byte
+# sequence, so the only thing that changes between them is the key
+# length, and with it the number of rounds.
+# ---------------------------------------------------------------------------
+
+APPENDIX_C_PLAINTEXT = bytes.fromhex("00112233445566778899aabbccddeeff")
+
+# (key, expected ciphertext)
+APPENDIX_C_VECTORS = (
+    (
+        bytes.fromhex("000102030405060708090a0b0c0d0e0f"),
+        bytes.fromhex("69c4e0d86a7b0430d8cdb78070b4c55a"),
+    ),
+    (
+        bytes.fromhex("000102030405060708090a0b0c0d0e0f1011121314151617"),
+        bytes.fromhex("dda97ca4864cdfe06eaf70a0ec0d7191"),
+    ),
+    (
+        bytes.fromhex(
+            "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+        ),
+        bytes.fromhex("8ea2b7ca516745bfeafc49904b496089"),
+    ),
+)
+
+# FIPS-197, Appendix B: the ciphertext of the worked example whose first
+# round is transcribed above.
+APPENDIX_B_CIPHERTEXT = bytes.fromhex("3925841d02dc09fbdc118597196a0b32")
+
+
+# ---------------------------------------------------------------------------
+# NIST SP 800-38A, Appendix F.1: the ECB examples. Four blocks per key
+# size, which exercise the cipher over a multi-block buffer rather than a
+# single block. The keys are the ones of FIPS-197 Appendix A, so a
+# failure here on a key that already passed the key-schedule tests points
+# at the cipher rather than at the expansion.
+# ---------------------------------------------------------------------------
+
+SP800_38A_PLAINTEXT = bytes.fromhex(
+    "6bc1bee22e409f96e93d7e117393172a"
+    "ae2d8a571e03ac9c9eb76fac45af8e51"
+    "30c81c46a35ce411e5fbc1191a0a52ef"
+    "f69f2445df4f9b17ad2b417be66c3710"
+)
+
+# (key, expected ciphertext for the four blocks above)
+SP800_38A_ECB_VECTORS = (
+    (
+        bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c"),
+        bytes.fromhex(
+            "3ad77bb40d7a3660a89ecaf32466ef97"
+            "f5d3d58503b9699de785895a96fdbaaf"
+            "43b1cd7f598ece23881b00e3ed030688"
+            "7b0c785e27e8ad3f8223207104725dd4"
+        ),
+    ),
+    (
+        bytes.fromhex("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"),
+        bytes.fromhex(
+            "bd334f1d6e45f25ff712a214571fa5cc"
+            "974104846d0ad3ad7734ecb3ecee4eef"
+            "ef7afd2270e2e60adce0ba2face6444e"
+            "9a4b41ba738d6c72fb16691603c18e0e"
+        ),
+    ),
+    (
+        bytes.fromhex(
+            "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
+        ),
+        bytes.fromhex(
+            "f3eed1bdb5d2a03c064b5a7e3db181f8"
+            "591ccb10d410ed26dc5ba74a31362870"
+            "b6ed21b99ca6f4f9f153e7b1beafed1d"
+            "23304b7a39f9f3ff067d8d8f9e24ecc7"
+        ),
+    ),
 )

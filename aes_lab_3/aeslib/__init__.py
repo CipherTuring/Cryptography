@@ -11,6 +11,13 @@ This module is the public facade: it re-exports the names that callers
 are expected to use and grows as each layer is added.
 """
 
+from .api import AES, BACKENDS
+from .cipher import (
+    decrypt_block,
+    decrypt_buffer,
+    encrypt_block,
+    encrypt_buffer,
+)
 from .gf import IRREDUCIBLE, add, inverse, mul, xtime
 from .key_schedule import (
     KEY_SIZES,
@@ -33,6 +40,14 @@ from .transforms import (
 )
 
 __all__ = [
+    # api
+    "AES",
+    "BACKENDS",
+    # cipher
+    "encrypt_block",
+    "decrypt_block",
+    "encrypt_buffer",
+    "decrypt_buffer",
     # gf
     "IRREDUCIBLE",
     "add",
