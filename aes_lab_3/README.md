@@ -28,7 +28,7 @@ are needed only to run the tests and to draw the figures.
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/CipherTuring/Cryptography.git>
 cd Cryptography/aes_lab_3
 pip install pytest matplotlib
 ```
