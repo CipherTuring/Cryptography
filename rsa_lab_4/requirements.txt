@@ -1,0 +1,8 @@
+# Runtime dependencies of the laboratory.
+#
+# The factorization algorithms and the key recovery need nothing but the
+# standard library, which is the point: no external library ever factors
+# n on our behalf. These are only for the experimental part.
+pytest>=8.0        # Exercise 5, the automatic tests
+matplotlib>=3.8    # Parts IV and V, the figures
+numpy>=1.26        # slope fitting and reference curves in the figures

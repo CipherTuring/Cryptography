@@ -1,0 +1,45 @@
+==============================================================================
+Exercise 6: factorization time against the size of n
+==============================================================================
+
+Experimental conditions
+-----------------------
+  Processor        Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz
+  Platform         Windows-11-10.0.26200-SP0
+  Interpreter      CPython 3.12.10
+  Repetitions      3 per cell, average reported
+  Budget           60.000 s per algorithm
+  Modulus seed     1000 + bits, so the run repeats
+
+Average factorization time
+--------------------------
+| Bits | n | Trial Division | Fermat | Pollard's Rho |
+|---|---|---|---|---|
+| 24 | 11207579 | 247.2 us | 43.8 us | 36.4 us |
+| 32 | 2281072831 | 3.90 ms | 425.1 us | 499.5 us |
+| 40 | 871068058009 | 83.64 ms | 5.31 ms | 1.29 ms |
+| 48 | 151111553458787 | 920.30 ms | 964.39 ms | 14.33 ms |
+| 64 | 10282276023965890597 | timeout | 28.295 s | 284.32 ms |
+| 80 | 626919093965434610154431 | timeout (not attempted) | timeout | 1.275 s |
+
+Iterations, which do not depend on this machine
+-----------------------------------------------
+| Bits | Trial Division | Fermat | Pollard's Rho |
+|---|---|---|---|
+| 24 | 1,399 | 55 | 18 |
+| 32 | 20,506 | 556 | 300 |
+| 40 | 419,559 | 5,287 | 574 |
+| 48 | 4,595,577 | 523,323 | 4,555 |
+| 64 | timeout | 24,558,747 | 75,072 |
+| 80 | timeout (not attempted) | timeout | 265,743 |
+
+The moduli, and how far apart their factors are
+-----------------------------------------------
+| Bits | n | p | q | distance |
+|---|---|---|---|---|
+| 24 | 11207579 | 2797 | 4007 | 1,210 |
+| 32 | 2281072831 | 41011 | 55621 | 14,610 |
+| 40 | 871068058009 | 839117 | 1038077 | 198,960 |
+| 48 | 151111553458787 | 9191153 | 16440979 | 7,249,826 |
+| 64 | 10282276023965890597 | 2833535609 | 3628779533 | 795,243,924 |
+| 80 | 626919093965434610154431 | 761048325253 | 823757274227 | 62,708,948,974 |
