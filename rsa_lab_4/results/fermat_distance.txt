@@ -1,0 +1,46 @@
+==============================================================================
+Exercise 7: the distance between p and q, and Fermat's cost
+==============================================================================
+
+Experimental conditions
+-----------------------
+  Processor        Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz
+  Interpreter      CPython 3.12.10
+  Repetitions      3 per point, average reported
+  Moduli           48 bits, seed 4207, same p throughout
+
+The two moduli the exercise asks for
+------------------------------------
+| Case | n | bits | distance | Fermat iterations | Fermat time |
+|---|---|---|---|---|---|
+| p and q close | 106486033108813 | 47 | 12 | 1 | 9.8 us |
+| p and q far apart | 209678084385617 | 48 | 10,000,016 | 838,944 | 900.80 ms |
+
+  The close pair is settled in 1 iteration: its factors are near
+  enough that the first candidate, a = ceil(sqrt(n)), already works.
+  One is the floor, so these two points alone cannot measure how the
+  cost grows - only that it does. The sweep below is what measures it.
+
+The full sweep
+--------------
+| distance | Fermat iterations | predicted | Fermat time | Rho iterations | Rho time |
+|---|---|---|---|---|---|
+| 12 | 1 | 0 | 9.8 us | 2,945 | 7.96 ms |
+| 1,002 | 1 | 0 | 5.9 us | 2,945 | 8.01 ms |
+| 10,002 | 2 | 1 | 8.7 us | 2,945 | 8.14 ms |
+| 30,002 | 11 | 11 | 13.8 us | 2,945 | 7.92 ms |
+| 100,008 | 121 | 121 | 120.5 us | 2,945 | 8.08 ms |
+| 300,008 | 1,075 | 1,075 | 1.03 ms | 2,945 | 8.34 ms |
+| 1,000,010 | 11,560 | 11,566 | 11.60 ms | 1,416 | 3.82 ms |
+| 3,000,002 | 95,571 | 95,960 | 107.95 ms | 2,945 | 7.79 ms |
+| 10,000,016 | 838,944 | 863,247 | 900.80 ms | 2,273 | 6.02 ms |
+
+What the sweep shows
+--------------------
+  Fitted exponent      1.94   (the algebra predicts 2.00)
+  Ten times the gap    30,002 -> 300,008 multiplies the work by 98, not by 10
+  Rho, the control     1,416 to 2,945 iterations, with no trend in the distance
+  Fermat is not a slow algorithm or a fast one. It is the right
+  algorithm for a modulus whose factors were chosen too close
+  together, and the wrong one for every other modulus - which is
+  why key generation is required to keep p and q far apart.

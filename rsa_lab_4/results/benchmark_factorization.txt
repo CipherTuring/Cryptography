@@ -11,16 +11,16 @@ Experimental conditions
   Budget           60.000 s per algorithm
   Modulus seed     1000 + bits, so the run repeats
 
-Average factorization time
---------------------------
+Average factorization time, ± the spread of the repetitions
+-----------------------------------------------------------
 | Bits | n | Trial Division | Fermat | Pollard's Rho |
 |---|---|---|---|---|
-| 24 | 11207579 | 247.2 us | 43.8 us | 36.4 us |
-| 32 | 2281072831 | 3.90 ms | 425.1 us | 499.5 us |
-| 40 | 871068058009 | 83.64 ms | 5.31 ms | 1.29 ms |
-| 48 | 151111553458787 | 920.30 ms | 964.39 ms | 14.33 ms |
-| 64 | 10282276023965890597 | timeout | 28.295 s | 284.32 ms |
-| 80 | 626919093965434610154431 | timeout (not attempted) | timeout | 1.275 s |
+| 24 | 11207579 | 248.9 us ± 2.1% | 45.6 us ± 12.9% | 38.4 us ± 17.3% |
+| 32 | 2281072831 | 3.97 ms ± 2.9% | 425.4 us ± 2.7% | 507.1 us ± 1.4% |
+| 40 | 871068058009 | 83.60 ms ± 1.5% | 5.66 ms ± 4.5% | 1.36 ms ± 2.9% |
+| 48 | 151111553458787 | 961.34 ms ± 7.9% | 574.62 ms ± 2.1% | 12.54 ms ± 0.9% |
+| 64 | 10282276023965890597 | timeout | 29.491 s ± 1.1% | 289.37 ms ± 1.0% |
+| 80 | 626919093965434610154431 | timeout (not attempted) | timeout | 1.276 s ± 0.6% |
 
 Iterations, which do not depend on this machine
 -----------------------------------------------

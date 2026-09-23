@@ -1,0 +1,149 @@
+{
+  "experiment": "Fermat's cost against the distance between the factors",
+  "system": {
+    "cpu_model": "Intel(R) Core(TM) i5-8300H CPU @ 2.30GHz",
+    "logical_cores": 8,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.12.10",
+    "python_implementation": "CPython"
+  },
+  "parameters": {
+    "bits": 48,
+    "seed": 4207,
+    "repeats": 3,
+    "gaps": [
+      10,
+      1000,
+      10000,
+      30000,
+      100000,
+      300000,
+      1000000,
+      3000000,
+      10000000
+    ],
+    "close_gap": 10,
+    "far_gap": 10000000,
+    "fit_threshold": 10
+  },
+  "fitted_exponent": 1.9429466125711161,
+  "measurements": [
+    {
+      "target_gap": 10,
+      "gap": 12,
+      "bits": 47,
+      "n": 106486033108813,
+      "p": 10319201,
+      "q": 10319213,
+      "fermat_iterations": 1,
+      "fermat_seconds": 9.800000043469481e-06,
+      "predicted_iterations": 1.7443202509960552e-06,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.007963466666675837
+    },
+    {
+      "target_gap": 1000,
+      "gap": 1002,
+      "bits": 47,
+      "n": 106496249117803,
+      "p": 10319201,
+      "q": 10320203,
+      "fermat_iterations": 1,
+      "fermat_seconds": 5.933333341090474e-06,
+      "predicted_iterations": 0.012161253509185973,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.008010200000095816
+    },
+    {
+      "target_gap": 10000,
+      "gap": 10002,
+      "bits": 47,
+      "n": 106589121926803,
+      "p": 10319201,
+      "q": 10329203,
+      "fermat_iterations": 2,
+      "fermat_seconds": 8.666666644785437e-06,
+      "predicted_iterations": 1.2112319114313943,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.00813719999996465
+    },
+    {
+      "target_gap": 30000,
+      "gap": 30002,
+      "bits": 47,
+      "n": 106795505946803,
+      "p": 10319201,
+      "q": 10349203,
+      "fermat_iterations": 11,
+      "fermat_seconds": 1.3833333393146555e-05,
+      "predicted_iterations": 10.88764476096871,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.007922033333291742
+    },
+    {
+      "target_gap": 100000,
+      "gap": 100008,
+      "bits": 47,
+      "n": 107517911932009,
+      "p": 10319201,
+      "q": 10419209,
+      "fermat_iterations": 121,
+      "fermat_seconds": 0.00012050000001787946,
+      "predicted_iterations": 120.56995661333248,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.008082966666734137
+    },
+    {
+      "target_gap": 300000,
+      "gap": 300008,
+      "bits": 47,
+      "n": 109581752132009,
+      "p": 10319201,
+      "q": 10619209,
+      "fermat_iterations": 1075,
+      "fermat_seconds": 0.0010295666666782684,
+      "predicted_iterations": 1074.7478306058483,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.008344566666664832
+    },
+    {
+      "target_gap": 1000000,
+      "gap": 1000010,
+      "bits": 47,
+      "n": 116805213470411,
+      "p": 10319201,
+      "q": 11319211,
+      "fermat_iterations": 11560,
+      "fermat_seconds": 0.011601433333377523,
+      "predicted_iterations": 11566.11717412839,
+      "rho_iterations": 1416,
+      "rho_seconds": 0.003821066666584253
+    },
+    {
+      "target_gap": 3000000,
+      "gap": 3000002,
+      "bits": 47,
+      "n": 137443532916803,
+      "p": 10319201,
+      "q": 13319203,
+      "fermat_iterations": 95571,
+      "fermat_seconds": 0.10794509999997597,
+      "predicted_iterations": 95960.15944211312,
+      "rho_iterations": 2945,
+      "rho_seconds": 0.007791666666586631
+    },
+    {
+      "target_gap": 10000000,
+      "gap": 10000016,
+      "bits": 48,
+      "n": 209678084385617,
+      "p": 10319201,
+      "q": 20319217,
+      "fermat_iterations": 838944,
+      "fermat_seconds": 0.90079603333326,
+      "predicted_iterations": 863246.6325741967,
+      "rho_iterations": 2273,
+      "rho_seconds": 0.00601849999990615
+    }
+  ]
+}

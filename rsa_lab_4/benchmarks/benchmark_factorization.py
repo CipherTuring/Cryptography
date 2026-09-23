@@ -81,11 +81,27 @@ class Measurement:
     def stdev_s(self) -> float | None:
         return statistics.stdev(self.seconds) if len(self.seconds) > 1 else None
 
+    @property
+    def relative_spread(self) -> float | None:
+        """Standard deviation as a percentage of the mean."""
+        if not self.stdev_s or not self.mean_s:
+            return None
+        return 100 * self.stdev_s / self.mean_s
+
     def cell(self) -> str:
-        """How this measurement appears in the assignment's table."""
+        """
+        How this measurement appears in the assignment's table.
+
+        The dispersion is printed next to the average rather than left
+        in the JSON. Two cells whose averages differ by less than their
+        spread are not telling us which algorithm is faster, and a
+        table that shows only the average invites exactly that reading.
+        """
         if self.status != OK:
             return self.status
-        return format_seconds(self.mean_s)
+        if self.relative_spread is None:
+            return format_seconds(self.mean_s)
+        return f"{format_seconds(self.mean_s)} ± {self.relative_spread:.1f}%"
 
     def as_dict(self) -> dict:
         data = asdict(self)
@@ -208,7 +224,7 @@ def build_report(
 
     by_cell = {(m.bits, m.algorithm): m for m in measurements}
 
-    report.section("Average factorization time")
+    report.section("Average factorization time, ± the spread of the repetitions")
     report.line("| Bits | n | " + " | ".join(labels) + " |")
     report.line("|---" * (2 + len(labels)) + "|")
     for modulus in moduli:
