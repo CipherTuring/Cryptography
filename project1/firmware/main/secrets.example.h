@@ -1,0 +1,20 @@
+/*
+ * Template for the pre-shared key. Copy it to secrets.h (gitignored) and
+ * replace the bytes with 32 random ones, for example the output of:
+ *
+ *   py -c "import secrets; print(', '.join(f'0x{b:02x}' for b in secrets.token_bytes(32)))"
+ *
+ * Both boards are built from the same source, so they always share this key.
+ */
+#pragma once
+
+#include <stdint.h>
+
+#define SM_PSK_LEN 32
+
+static const uint8_t SM_PSK[SM_PSK_LEN] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};

@@ -25,6 +25,8 @@ from dataclasses import dataclass
 
 from factorlib.arith import modinv
 
+from .keygen import is_probable_prime
+
 __all__ = [
     "PublicKey",
     "PrivateKey",
@@ -73,9 +75,27 @@ def totient(p: int, q: int) -> int:
     the factorization it is a subtraction and a multiplication, and the
     private key follows immediately - which is the answer to the last
     question of the experimental analysis.
+
+    Both arguments are verified to be prime, because the formula holds
+    only then. A factorization algorithm returns some non-trivial
+    divisor and the cofactor that is left, and that cofactor need not be
+    prime: 191730 splits as 2 * 95865, which is a correct factorization
+    of a number that is not an RSA modulus at all. Feeding those two
+    here would produce a number that is not phi(191730), and therefore a
+    private exponent that decrypts nothing - silently. Refusing is the
+    only honest answer, since no key exists to recover.
     """
     if p < 2 or q < 2:
         raise ValueError(f"the factors must be primes, got p = {p}, q = {q}")
+    composite = [factor for factor in (p, q) if not is_probable_prime(factor)]
+    if composite:
+        listed = " and ".join(str(factor) for factor in composite)
+        raise ValueError(
+            f"the factors must be primes, but {listed} "
+            f"{'are' if len(composite) > 1 else 'is'} composite: "
+            f"{p} * {q} = {p * q} is not a product of two primes, "
+            "so it carries no RSA key to recover"
+        )
     return (p - 1) * (q - 1)
 
 

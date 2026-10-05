@@ -1,0 +1,9 @@
+# Settings shared by both roles. Role-specific values live in sdkconfig.a / sdkconfig.b.
+
+# Colored log levels in `idf.py monitor` (green I, yellow W, red E)
+CONFIG_LOG_COLORS=y
+
+# mbedTLS: DH and HKDF are off by default in ESP-IDF; the bignum accelerator speeds up DH-2048
+CONFIG_MBEDTLS_DHM_C=y
+CONFIG_MBEDTLS_HKDF_C=y
+CONFIG_MBEDTLS_HARDWARE_MPI=y

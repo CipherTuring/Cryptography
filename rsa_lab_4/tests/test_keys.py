@@ -63,9 +63,43 @@ def test_totient_known_values(p, q, expected):
 
 
 @pytest.mark.parametrize(("p", "q"), [(1, 5), (0, 5), (5, 1), (-3, 7)])
-def test_totient_rejects_non_primes(p, q):
+def test_totient_rejects_factors_below_two(p, q):
     with pytest.raises(ValueError, match="must be primes"):
         totient(p, q)
+
+
+@pytest.mark.parametrize(
+    ("p", "q"),
+    [
+        (2, 95865),  # 191730 = 2 * 3 * 5 * 7 * 11 * 83
+        (3, 35),  # 105, the cofactor Trial Division reports
+        (4, 9),
+        (95865, 4),  # both composite
+    ],
+)
+def test_totient_rejects_composite_factors(p, q):
+    """
+    (p-1)(q-1) is Euler's totient only when both factors are prime.
+
+    A factorization algorithm returns one divisor and whatever is left,
+    and what is left need not be prime. Accepting such a pair here would
+    produce a private exponent that decrypts almost nothing, without any
+    error to show for it, so the precondition is enforced rather than
+    assumed.
+    """
+    with pytest.raises(ValueError, match="composite"):
+        totient(p, q)
+
+
+def test_a_number_with_more_than_two_prime_factors_has_no_key():
+    """
+    The regression: 191730 factors correctly as 2 * 95865, but it is not
+    an RSA modulus, and the key that used to come out of it was wrong
+    for almost every message.
+    """
+    public = PublicKey(n=191730, e=17)
+    with pytest.raises(ValueError, match="not a product of two primes"):
+        recover_private_key(public, 2, 95865)
 
 
 def test_the_private_exponent_of_exercise_four():

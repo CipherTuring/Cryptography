@@ -1,0 +1,58 @@
+menu "Secure Messaging"
+
+    choice SM_ROLE
+        prompt "Device role"
+        default SM_ROLE_A
+        help
+            Both boards run the same firmware; only the role differs.
+            A creates the Wi-Fi access point and runs the TCP server.
+            B joins that network and runs the TCP client.
+
+        config SM_ROLE_A
+            bool "A (access point + TCP server)"
+
+        config SM_ROLE_B
+            bool "B (station + TCP client)"
+    endchoice
+
+    config SM_WIFI_SSID
+        string "Wi-Fi network name (created by A)"
+        default "esp32-secure-msg"
+
+    config SM_WIFI_PASSWORD
+        string "Wi-Fi password (WPA2, at least 8 characters)"
+        default "sm-demo-2026"
+        help
+            Only protects the link layer. The secure protocol treats the
+            network as untrusted, so this is not a security parameter of
+            the project.
+
+    config SM_B_IP
+        string "Static IP of board B"
+        default "192.168.4.2"
+        help
+            Board A always uses 192.168.4.1 (default ESP32 access point
+            address). DHCP on A hands out 192.168.4.100-120, so B's static
+            address never collides with the laptop.
+
+    config SM_TARGET_IP
+        string "Default TCP target for board B"
+        default "192.168.4.1"
+        help
+            Where B connects at boot. Change it at run time with the
+            `connect <ip>` console command to go through the laptop proxy.
+
+    config SM_TCP_PORT
+        int "TCP port of the server on A"
+        range 1024 65535
+        default 5000
+
+    config SM_TEST_COMMANDS
+        bool "Enable test-only console commands"
+        default y
+        help
+            Adds commands that stage attacks with the real boards, such as
+            `debug psk wrong` (this board then behaves as an unauthorized
+            device). Disable for a production build.
+
+endmenu

@@ -91,6 +91,17 @@ def test_the_script_fails_cleanly_on_a_prime_modulus(capsys):
     assert "the attack failed" in capsys.readouterr().out
 
 
+def test_the_script_refuses_a_modulus_with_more_than_two_prime_factors(capsys):
+    """
+    191730 = 2 * 3 * 5 * 7 * 11 * 83. The algorithms factor it correctly
+    as 2 * 95865, but no RSA key stands behind it, and the attack must
+    say so instead of returning an exponent that decrypts nothing.
+    """
+    assert main(["--n", "191730", "--e", "17", "--c", "12345"]) == 1
+    printed = capsys.readouterr().out
+    assert "95865 is composite" in printed
+
+
 def test_the_script_fails_cleanly_on_an_out_of_range_ciphertext(capsys):
     assert main(["--n", "3233", "--e", str(DEFAULT_E), "--c", "99999"]) == 1
     assert "invalid input" in capsys.readouterr().out

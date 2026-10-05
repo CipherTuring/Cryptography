@@ -47,7 +47,7 @@ is run from inside `rsa_lab_4/`.
 python -m pytest tests/ -v
 ```
 
-351 tests, about 5 seconds. They must all pass before the experimental
+357 tests, about 5 seconds. They must all pass before the experimental
 evaluation is run, which is the requirement of Exercise 5.
 
 One layer at a time:
@@ -118,6 +118,21 @@ All three algorithms share one signature, `(n, *, budget=None) -> FactorResult`,
 and one set of exceptions: `NotFactorable` when no answer exists, and
 `FactorizationTimeout` when a `Budget` runs out. That is what lets the
 benchmark, the attack and the tests loop over them without special cases.
+
+## Trying your own values
+
+[`custom_attack.py`](custom_attack.py) is a scratch pad for experimenting. Edit
+the parameter block at the top — modulus, public exponent, ciphertext, which
+algorithm to use, how long to allow it — and run it:
+
+```bash
+python custom_attack.py
+```
+
+It factors the modulus, rebuilds the private key, decrypts and verifies,
+printing each step. Leaving the ciphertext empty and setting a message instead
+makes it encrypt that message first, so a case can be invented rather than
+solved. Nothing else in the laboratory imports the file.
 
 ## Reproducing the experiments
 

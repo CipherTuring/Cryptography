@@ -1,0 +1,2 @@
+# Role A: access point + TCP server
+CONFIG_SM_ROLE_A=y

@@ -1,0 +1,13 @@
+# ESP-IDF build output (one directory per role) and generated configuration
+firmware/build_*/
+firmware/sdkconfig
+firmware/sdkconfig.old
+
+# Pre-shared key: never commit it (secrets.example.h is the template)
+firmware/main/secrets.h
+
+# Python virtual environment for the laptop tools
+tools/.venv/
+
+# Raw measurement and test output (aggregated tables go in the report)
+results/raw/

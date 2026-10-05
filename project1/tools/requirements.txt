@@ -1,0 +1,4 @@
+pyserial
+cryptography
+pytest
+matplotlib
