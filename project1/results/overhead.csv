@@ -1,0 +1,19 @@
+field,bytes
+type,1
+version,1
+sender_id,1
+session_id,8
+counter,8
+header subtotal (= GCM AAD),19
+ciphertext,= plaintext length
+tag,16
+frame payload (what the proxy logs),plaintext + 35
+length prefix (framing),4
+on-wire total,plaintext + 39
+
+plaintext_len,on_wire_bytes,overhead_pct
+16,55,243.75
+64,103,60.94
+128,167,30.47
+256,295,15.23
+477,516,8.18
